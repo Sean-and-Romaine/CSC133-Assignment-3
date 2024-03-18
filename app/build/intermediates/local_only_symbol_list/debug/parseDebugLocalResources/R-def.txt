@@ -12,6 +12,7 @@ layout activity_main
 mipmap ic_launcher
 mipmap ic_launcher_round
 string app_name
+string pause
 string tap_to_play
 style Base.Theme.SnakeGame
 style Theme.SnakeGame
