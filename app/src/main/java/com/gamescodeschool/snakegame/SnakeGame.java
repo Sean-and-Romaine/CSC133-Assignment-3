@@ -1,6 +1,6 @@
 package com.gamescodeschool.snakegame;
 
-//TODO: fix pause bug that starts new game when pause is pressed again.
+//TODO: fix pause bug that continues game after death if pause is pressed again.
 
 import android.content.Context;
 import android.content.res.AssetFileDescriptor;
@@ -198,8 +198,7 @@ class SnakeGame extends SurfaceView implements Runnable {
         if (mSnake.detectDeath()) {
             // Pause the game ready to start again
             mSP.play(mCrashID, 1, 1, 0, 0, 1);
-
-            mPaused =true;
+            mPaused = true;
         }
 
     }
@@ -252,17 +251,18 @@ class SnakeGame extends SurfaceView implements Runnable {
     public boolean onTouchEvent(MotionEvent motionEvent) {
         switch (motionEvent.getAction() & MotionEvent.ACTION_MASK) {
             case MotionEvent.ACTION_UP:
+                // Pause button conditional
+                if (pauseButton.contains((int)motionEvent.getX(), (int)motionEvent.getY())) {
+                    togglePause(); // Toggle pause state
+                    return true;
+                }
+
+                // if not paused then new game is created
                 if (mPaused) {
                     mPaused = false;
                     newGame();
 
                     // Don't want to process snake direction for this tap
-                    return true;
-                }
-
-                // Pause button conditional
-                if (pauseButton.contains((int)motionEvent.getX(), (int)motionEvent.getY())) {
-                    togglePause(); // Toggle pause state
                     return true;
                 } else {
 
@@ -299,7 +299,7 @@ class SnakeGame extends SurfaceView implements Runnable {
 
     // Pause button methods below
     private void togglePause() {
-        mPaused = !mPaused;
+        mPaused = !mPaused; // switches mPaused to whichever state its not in
     }
 
     private void createPauseButton(Point size) {
