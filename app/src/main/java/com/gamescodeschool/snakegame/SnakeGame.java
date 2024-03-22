@@ -9,6 +9,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Point;
+import android.graphics.Typeface;
 import android.media.AudioAttributes;
 import android.media.AudioManager;
 import android.media.SoundPool;
@@ -219,6 +220,8 @@ class SnakeGame extends SurfaceView implements Runnable {
 
             // Draw the score
             mCanvas.drawText("" + mScore, 20, 120, mPaint);
+            Typeface typeface = Typeface.create(Typeface.SANS_SERIF, Typeface.BOLD);
+            mPaint.setTypeface(typeface);
 
             // Draw the apple and the snake
             mApple.draw(mCanvas, mPaint);
