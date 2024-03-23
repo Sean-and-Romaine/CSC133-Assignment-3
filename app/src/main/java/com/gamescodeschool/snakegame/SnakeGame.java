@@ -1,5 +1,7 @@
 package com.gamescodeschool.snakegame;
 
+//TODO: fix pause bug that continues game after death if pause is pressed again.
+
 import android.content.Context;
 import android.content.res.AssetFileDescriptor;
 import android.content.res.AssetManager;
@@ -7,6 +9,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Point;
+import android.graphics.Typeface;
 import android.media.AudioAttributes;
 import android.media.AudioManager;
 import android.media.SoundPool;
@@ -16,7 +19,10 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import java.io.IOException;
 
-class SnakeGame extends SurfaceView implements Runnable{
+// Pause import
+import android.graphics.Rect;
+
+class SnakeGame extends SurfaceView implements Runnable {
 
     // Objects for the game loop/thread
     private Thread mThread = null;
@@ -48,6 +54,9 @@ class SnakeGame extends SurfaceView implements Runnable{
     // And an apple
     private Apple mApple;
 
+    // Pause button variable
+    private Rect pauseButton;
+
 
     // This is the constructor method that gets called
     // from SnakeActivity
@@ -58,6 +67,9 @@ class SnakeGame extends SurfaceView implements Runnable{
         int blockSize = size.x / NUM_BLOCKS_WIDE;
         // How many blocks of the same size will fit into the height
         mNumBlocksHigh = size.y / blockSize;
+
+        // Creates the button object
+        createPauseButton(size);
 
         // Initialize the SoundPool
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -187,8 +199,7 @@ class SnakeGame extends SurfaceView implements Runnable{
         if (mSnake.detectDeath()) {
             // Pause the game ready to start again
             mSP.play(mCrashID, 1, 1, 0, 0, 1);
-
-            mPaused =true;
+            mPaused = true;
         }
 
     }
@@ -209,10 +220,15 @@ class SnakeGame extends SurfaceView implements Runnable{
 
             // Draw the score
             mCanvas.drawText("" + mScore, 20, 120, mPaint);
+            Typeface typeface = Typeface.create(Typeface.SANS_SERIF, Typeface.BOLD);
+            mPaint.setTypeface(typeface);
 
             // Draw the apple and the snake
             mApple.draw(mCanvas, mPaint);
             mSnake.draw(mCanvas, mPaint);
+
+            // Draws the pause button
+            drawPauseButton(mCanvas, mPaint);
 
             // Draw some text while paused
             if(mPaused){
@@ -229,7 +245,6 @@ class SnakeGame extends SurfaceView implements Runnable{
                         200, 700, mPaint);
             }
 
-
             // Unlock the mCanvas and reveal the graphics for this frame
             mSurfaceHolder.unlockCanvasAndPost(mCanvas);
         }
@@ -239,16 +254,24 @@ class SnakeGame extends SurfaceView implements Runnable{
     public boolean onTouchEvent(MotionEvent motionEvent) {
         switch (motionEvent.getAction() & MotionEvent.ACTION_MASK) {
             case MotionEvent.ACTION_UP:
+                // Pause button conditional
+                if (pauseButton.contains((int)motionEvent.getX(), (int)motionEvent.getY())) {
+                    togglePause(); // Toggle pause state
+                    return true;
+                }
+
+                // if not paused then new game is created
                 if (mPaused) {
                     mPaused = false;
                     newGame();
 
                     // Don't want to process snake direction for this tap
                     return true;
-                }
+                } else {
 
-                // Let the Snake class handle the input
-                mSnake.switchHeading(motionEvent);
+                    // Let the Snake class handle the input
+                    mSnake.switchHeading(motionEvent);
+                }
                 break;
 
             default:
@@ -275,5 +298,26 @@ class SnakeGame extends SurfaceView implements Runnable{
         mPlaying = true;
         mThread = new Thread(this);
         mThread.start();
+    }
+
+    // Pause button methods below
+    private void togglePause() {
+        mPaused = !mPaused; // switches mPaused to whichever state its not in
+    }
+
+    private void createPauseButton(Point size) {
+        int buttonWidth = size.x / 6;
+        int buttonHeight = size.y / 10;
+        int buttonX = size.x - buttonWidth; // Aligns to right side
+        int buttonY = 0; // Align to top
+        pauseButton = new Rect(buttonX,
+                               buttonY,
+                          buttonX + buttonWidth,
+                        buttonY + buttonHeight);
+    }
+
+    private void drawPauseButton(Canvas c, Paint p) {
+        p.setColor(Color.argb(255, 255, 255, 255));
+        c.drawRect(pauseButton, p);
     }
 }
