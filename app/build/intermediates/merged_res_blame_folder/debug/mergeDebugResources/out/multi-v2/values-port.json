@@ -4,7 +4,7 @@
             "outputFile": "com.gamescodeschool.snakegame.app-mergeDebugResources-29:/values-port/values-port.xml",
             "map": [
                 {
-                    "source": "C:\\Users\\King2\\.gradle\\caches\\transforms-3\\709f9fb0076a87913066d2468486e87f\\transformed\\appcompat-1.6.1\\res\\values-port\\values-port.xml",
+                    "source": "/Users/rddcruz/.gradle/caches/transforms-3/709f9fb0076a87913066d2468486e87f/transformed/appcompat-1.6.1/res/values-port/values-port.xml",
                     "from": {
                         "startLines": "2",
                         "startColumns": "4",

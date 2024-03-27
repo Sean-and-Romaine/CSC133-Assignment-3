@@ -207,46 +207,72 @@ class SnakeGame extends SurfaceView implements Runnable {
 
     // Do all the drawing
     public void draw() {
-        // Get a lock on the mCanvas
-        if (mSurfaceHolder.getSurface().isValid()) {
-            mCanvas = mSurfaceHolder.lockCanvas();
+        if (!mSurfaceHolder.getSurface().isValid()) {
+            return;
+        }
 
-            // Fill the screen with a color
-            mCanvas.drawColor(Color.argb(255, 26, 128, 182));
+        mCanvas = mSurfaceHolder.lockCanvas();
+        if (mCanvas == null) {
+            return;
+        }
 
-            // Set the size and color of the mPaint for the text
-            mPaint.setColor(Color.argb(255, 255, 255, 255));
-            mPaint.setTextSize(120);
+        drawBackground();
+        drawScore();
+        drawAppleAndSnake();
+        drawPauseMessage();
+        drawHud();
 
-            // Draw the score
-            mCanvas.drawText("" + mScore, 20, 120, mPaint);
-            Typeface typeface = Typeface.create(Typeface.SANS_SERIF, Typeface.BOLD);
-            mPaint.setTypeface(typeface);
+        mSurfaceHolder.unlockCanvasAndPost(mCanvas);
+    }
 
-            // Draw the apple and the snake
-            mApple.draw(mCanvas, mPaint);
-            mSnake.draw(mCanvas, mPaint);
+    private void drawBackground() {
+        mCanvas.drawColor(Color.argb(255,40, 72, 203));
+    }
 
-            // Draws the pause button
-            drawPauseButton(mCanvas, mPaint);
+    private void drawScore() {
+        mPaint.setColor(Color.WHITE);
+        mPaint.setTextSize(175);
+        Typeface typeface = Typeface.create(Typeface.SANS_SERIF, Typeface.BOLD);
+        mPaint.setTypeface(typeface);
+        String text = "Score: " + mScore;
+        float textWidth = mPaint.measureText(text);
+        int margin = 20; // Margin from the right edge
+        // Draw the text at position (x, 120)
+        mCanvas.drawText(text, margin, 120, mPaint);
+    }
 
-            // Draw some text while paused
-            if(mPaused){
+    private void drawHud() {
+        mPaint.setColor(Color.WHITE);
+        mPaint.setTextSize(175);
+        String firstName = "Romaine";
+        float firstNameWidth = mPaint.measureText(firstName);
+        int margin = 20; // Margin from the left edge
+        int scoreTextHeight = 120; // Height of the score text
+        float textWidth = mPaint.measureText(firstName);
+        // Calculate the X position to display the text on the right side
+        float x1 = mCanvas.getWidth() - textWidth - margin;
 
-                // Set the size and color of the mPaint for the text
-                mPaint.setColor(Color.argb(255, 255, 255, 255));
-                mPaint.setTextSize(250);
+        // Draw the score text at position (margin, scoreTextHeight)
+        mCanvas.drawText(firstName, x1, scoreTextHeight, mPaint);
 
-                // Draw the message
-                // We will give this an international upgrade soon
-                //mCanvas.drawText("Tap To Play!", 200, 700, mPaint);
-                mCanvas.drawText(getResources().
-                                getString(R.string.tap_to_play),
-                        200, 700, mPaint);
-            }
+        // Draw additional text underneath the score
+        String secondName = "Sean";
+        float secondNameWidth = mPaint.measureText(secondName);
+        float x2 = mCanvas.getWidth() - secondNameWidth - margin;; // Center the text horizontally
+        float y = scoreTextHeight + mPaint.getTextSize() + 20; // Position the text below the score
+        mCanvas.drawText(secondName, x2, y, mPaint);
+    }
 
-            // Unlock the mCanvas and reveal the graphics for this frame
-            mSurfaceHolder.unlockCanvasAndPost(mCanvas);
+    private void drawAppleAndSnake() {
+        mApple.draw(mCanvas, mPaint);
+        mSnake.draw(mCanvas, mPaint);
+    }
+
+    private void drawPauseMessage() {
+        if (mPaused) {
+            mPaint.setColor(Color.WHITE);
+            mPaint.setTextSize(250);
+            mCanvas.drawText("Tap To Play!", 200, 700, mPaint);
         }
     }
 
@@ -311,9 +337,9 @@ class SnakeGame extends SurfaceView implements Runnable {
         int buttonX = size.x - buttonWidth; // Aligns to right side
         int buttonY = 0; // Align to top
         pauseButton = new Rect(buttonX,
-                               buttonY,
-                          buttonX + buttonWidth,
-                        buttonY + buttonHeight);
+                buttonY,
+                buttonX + buttonWidth,
+                buttonY + buttonHeight);
     }
 
     private void drawPauseButton(Canvas c, Paint p) {
