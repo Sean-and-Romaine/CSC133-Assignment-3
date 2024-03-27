@@ -204,6 +204,120 @@ class SnakeGame extends SurfaceView implements Runnable {
 
     }
 
+    class Apple implements Drawables {
+        private Point location;
+        private int blockSize;
+
+        public Apple(Point location, int blockSize) {
+            this.location = location;
+            this.blockSize = blockSize;
+        }
+
+        @Override
+        public void draw(Canvas canvas, Paint paint) {
+            // Draw the apple at the specified location
+            paint.setColor(Color.RED);
+            canvas.drawRect(location.x * blockSize,
+                    location.y * blockSize,
+                    (location.x + 1) * blockSize,
+                    (location.y + 1) * blockSize,
+                    paint);
+        }
+    }
+
+    interface Drawable {
+        void draw(Canvas canvas, Paint paint);
+    }
+
+    class Apple implements Drawable {
+        // Apple implementation
+    }
+
+    class Snake implements Drawable {
+        // Snake implementation
+    }
+
+    private void drawDrawables() {
+        for (Drawable drawable : drawables) {
+            drawable.draw(mCanvas, mPaint);
+        }
+    }
+
+    public void draw() {
+        if (!mSurfaceHolder.getSurface().isValid()) {
+            return;
+        }
+
+        mCanvas = mSurfaceHolder.lockCanvas();
+        if (mCanvas == null) {
+            return;
+        }
+
+        drawBackground();
+        drawScore();
+        drawDrawables(); // Changed from drawAppleAndSnake()
+        drawPauseMessage();
+        drawHud();
+
+        mSurfaceHolder.unlockCanvasAndPost(mCanvas);
+    }
+
+    private List<Drawable> drawables = new ArrayList<>();
+
+    public SnakeGame(Context context, Point size) {
+        super(context);
+
+        // Other initialization code...
+
+        // Add game objects to the list of drawables
+        drawables.add(mApple);
+        drawables.add(mSnake);
+    }
+
+
+//    class Snake implements Drawables {
+//        private List<Point> snakeParts;
+//        private int blockSize;
+//
+//        public Snake(List<Point> snakeParts, int blockSize) {
+//            this.snakeParts = snakeParts;
+//            this.blockSize = blockSize;
+//        }
+//
+//        @Override
+//        public void draw(Canvas canvas, Paint paint) {
+//            // Draw each part of the snake
+//            paint.setColor(Color.GREEN);
+//            for (Point part : snakeParts) {
+//                canvas.drawRect(part.x * blockSize,
+//                        part.y * blockSize,
+//                        (part.x + 1) * blockSize,
+//                        (part.y + 1) * blockSize,
+//                        paint);
+//            }
+//        }
+//    }
+//
+//    public void draws() {
+//        if (!mSurfaceHolder.getSurface().isValid()) {
+//            return;
+//        }
+//
+//        mCanvas = mSurfaceHolder.lockCanvas();
+//        if (mCanvas == null) {
+//            return;
+//        }
+//
+//        drawBackground();
+//        drawScore();
+//        for (Drawables drawable : drawables) {
+//            drawable.draw(mCanvas, mPaint);
+//        }
+//        drawPauseMessage();
+//        drawHud();
+//
+//        mSurfaceHolder.unlockCanvasAndPost(mCanvas);
+//    }
 
     // Do all the drawing
     public void draw() {
