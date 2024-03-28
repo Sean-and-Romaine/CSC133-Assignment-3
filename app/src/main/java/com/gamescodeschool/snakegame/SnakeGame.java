@@ -1,7 +1,5 @@
 package com.gamescodeschool.snakegame;
 
-//TODO: fix pause bug that continues game after death if pause is pressed again.
-
 import android.content.Context;
 import android.content.res.AssetFileDescriptor;
 import android.content.res.AssetManager;
@@ -9,7 +7,6 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Point;
-import android.graphics.Typeface;
 import android.media.AudioAttributes;
 import android.media.AudioManager;
 import android.media.SoundPool;
@@ -216,51 +213,14 @@ class SnakeGame extends SurfaceView implements Runnable {
             return;
         }
 
-        drawBackground();
-        drawScore();
+        HUD.drawBackground(mCanvas);
+        HUD.drawScore(mCanvas, mPaint, mScore);
+        HUD.drawHud(mCanvas, mPaint);
         drawAppleAndSnake();
+        drawPauseButton(mCanvas, mPaint);
         drawPauseMessage();
-        drawHud();
 
         mSurfaceHolder.unlockCanvasAndPost(mCanvas);
-    }
-
-    private void drawBackground() {
-        mCanvas.drawColor(Color.argb(255,40, 72, 203));
-    }
-
-    private void drawScore() {
-        mPaint.setColor(Color.WHITE);
-        mPaint.setTextSize(175);
-        Typeface typeface = Typeface.create(Typeface.SANS_SERIF, Typeface.BOLD);
-        mPaint.setTypeface(typeface);
-        String text = "Score: " + mScore;
-        float textWidth = mPaint.measureText(text);
-        int margin = 20; // Margin from the right edge
-        // Draw the text at position (x, 120)
-        mCanvas.drawText(text, margin, 120, mPaint);
-    }
-
-    private void drawHud() {
-        mPaint.setColor(Color.WHITE);
-        mPaint.setTextSize(175);
-        String firstName = "Romaine";
-        float firstNameWidth = mPaint.measureText(firstName);
-        int margin = 20; // Margin from the left edge
-        int scoreTextHeight = 120; // Height of the score text
-        float textWidth = mPaint.measureText(firstName);
-        // Calculate the X position to display the text on the right side
-        float x1 = mCanvas.getWidth() - textWidth - margin;
-
-        // Draw the score text at position (margin, scoreTextHeight)
-        mCanvas.drawText(firstName, x1, scoreTextHeight, mPaint);
-
-        // Draw additional text underneath the score
-        String secondName = "Sean";
-        float secondNameWidth = mPaint.measureText(secondName);
-        float x2 = mCanvas.getWidth() - secondNameWidth - margin;; // Center the text horizontally
-        float y = scoreTextHeight + mPaint.getTextSize() + 20; // Position the text below the score
-        mCanvas.drawText(secondName, x2, y, mPaint);
     }
 
     private void drawAppleAndSnake() {
@@ -272,7 +232,7 @@ class SnakeGame extends SurfaceView implements Runnable {
         if (mPaused) {
             mPaint.setColor(Color.WHITE);
             mPaint.setTextSize(250);
-            mCanvas.drawText("Tap To Play!", 200, 700, mPaint);
+            mCanvas.drawText("Tap to Play!", 200, 550, mPaint);
         }
     }
 
@@ -337,13 +297,13 @@ class SnakeGame extends SurfaceView implements Runnable {
         int buttonX = size.x - buttonWidth; // Aligns to right side
         int buttonY = 0; // Align to top
         pauseButton = new Rect(buttonX,
-                buttonY,
-                buttonX + buttonWidth,
-                buttonY + buttonHeight);
+                               buttonY,
+                          buttonX + buttonWidth,
+                        buttonY + buttonHeight);
     }
 
     private void drawPauseButton(Canvas c, Paint p) {
-        p.setColor(Color.argb(255, 255, 255, 255));
+        p.setColor(Color.argb(150, 200, 0, 0));
         c.drawRect(pauseButton, p);
     }
 }
